@@ -1,0 +1,9 @@
+---
+- hosts: default_target
+  become: yes
+  tasks:
+  - name: install vim-enhanced
+    dnf:
+      name: "vim-enhanced"
+      state: latest
+

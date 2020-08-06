@@ -1,0 +1,33 @@
+---
+# setup nfs client, including settings
+- hosts: default_target
+  become: yes
+  tasks: 
+  - name: install nfs-utils
+    dnf:
+      name: nfs-utils
+      state: latest
+  - name: add fstab entry
+    mount:
+      src: "{{ nfs_client['mount']['src'] }}"
+      path: "{{ nfs_client['mount']['path'] }}"
+      fstype: "{{ nfs_client['mount']['fstype'] }}"
+      opts: "{{ nfs_client['mount']['opts'] }}"
+      dump: "{{ nfs_client['mount']['dump'] }}"
+      passno: "{{ nfs_client['mount']['passno'] }}"
+      state: present
+  - name: create mount point
+    file:
+      path: "{{ nfs_client['file']['path'] }}"
+      state: directory
+  - name: create group
+    group:
+      name: "{{ nfs_client['group']['name'] }}"
+      gid: "{{ nfs_client['group']['gid'] }}"
+      state: present
+  - name: add user to group
+    user:
+      name: "{{ nfs_client['user']['name'] }}"
+      append: yes
+      groups: "{{ nfs_client['user']['groups'] }}"
+    

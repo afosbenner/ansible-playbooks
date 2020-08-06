@@ -1,0 +1,12 @@
+---
+- hosts: default_target
+  become: yes
+  tasks:
+  - name: check for existence of /usr/bin/python3
+    raw: test -e /usr/bin/python3
+    register: test_result
+    changed_when: false
+    failed_when: test_result.rc not in [0,1]
+  - name: install python3
+    raw: dnf -y install python3
+    when: test_result.rc == 1

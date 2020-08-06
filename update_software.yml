@@ -1,0 +1,21 @@
+---
+- hosts: default_target
+  become: yes
+  tasks:
+  - name: update all packages using dnf
+    dnf:
+      name: "*"
+      state: latest
+    register: dnf_stat
+  - name: check if computer needs to be restarted
+    command:
+      cmd: dnf needs-restarting -r
+    register: needs_restarting
+    changed_when: false
+    failed_when: needs_restarting.rc not in [0,1]
+    when: dnf_stat.changed
+  - name: reboot computer
+    reboot:
+    when:
+    - dnf_stat.changed
+    - needs_restarting.rc == 1
