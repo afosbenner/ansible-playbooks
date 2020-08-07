@@ -10,3 +10,4 @@
   - name: install python3
     raw: dnf -y install python3
     when: test_result.rc == 1
+...

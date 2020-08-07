@@ -6,4 +6,4 @@
     dnf:
       name: "vim-enhanced"
       state: latest
-
+...

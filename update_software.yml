@@ -19,3 +19,4 @@
     when:
     - dnf_stat.changed
     - needs_restarting.rc == 1
+...
