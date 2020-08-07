@@ -5,7 +5,8 @@
   - name: install nfs-utils
     dnf:
       name: nfs-utils
-      state: latest
+      #state: latest # changed based on linting
+      state: present
   - name: add fstab entry
     mount:
       src: "{{ nfs_client['mount']['src'] }}"

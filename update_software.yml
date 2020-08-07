@@ -6,17 +6,20 @@
     dnf:
       name: "*"
       state: latest
-    register: dnf_stat
-  - name: check if computer needs to be restarted
+    notify:
+    - check reboot
+    - reboot
+  handlers:
+  # check if computer needs to be rebooted
+  - name: check reboot
     command:
       cmd: dnf needs-restarting -r
+      warn: false # suppress dnf module warning
     register: needs_restarting
     changed_when: false
     failed_when: needs_restarting.rc not in [0,1]
-    when: dnf_stat.changed
-  - name: reboot computer
+  - name: reboot
     reboot:
     when:
-    - dnf_stat.changed
     - needs_restarting.rc == 1
 ...

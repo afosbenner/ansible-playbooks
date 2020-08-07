@@ -5,5 +5,5 @@
   - name: install vim-enhanced
     dnf:
       name: "vim-enhanced"
-      state: latest
+      state: present
 ...
