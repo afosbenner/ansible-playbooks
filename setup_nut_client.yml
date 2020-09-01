@@ -1,0 +1,62 @@
+---
+- hosts: default_target
+  become: yes
+  tasks:
+  - name: install nut
+    dnf:
+      name: nut
+      state: present
+  - name: enable service nut-monitor
+    systemd:
+      name: nut-monitor
+      enabled: yes
+  - name: create backup copy of default nut.conf file
+    copy:
+      remote_src: yes
+      force: no
+      mode: preserve
+      src: /etc/ups/nut.conf
+      dest: /etc/ups/nut.conf_default
+  - name: create backup copy of default upsmon.conf file
+    copy:
+      remote_src: yes
+      force: no
+      mode: preserve
+      src: /etc/ups/upsmon.conf
+      dest: /etc/ups/upsmon.conf_default
+  - name: remove blank lines and comment lines from nut.conf
+    lineinfile:
+      path: /etc/ups/nut.conf
+      regexp: '^[#\s]'
+      state: absent
+  - name: remove blank lines and comment lines from upsmon.conf
+    lineinfile:
+      path: /etc/ups/upsmon.conf
+      regexp: '^[#\s]'
+      state: absent
+  - name: modify mode line in nut.conf
+    lineinfile:
+      path: /etc/ups/nut.conf
+      regexp: '^MODE=.*'
+      line: 'MODE=netclient'
+      state: present
+    notify: restart nut-monitor
+  - name: modify monitor line in upsmon.conf
+    lineinfile:
+      path: /etc/ups/upsmon.conf
+      regexp: '^MONITOR .*'
+      insertbefore: '^MINSUPPLIES'
+      line: 'MONITOR {{ ups["sys"] }} 1 {{ ups["user"] }} {{ ups["pass"] }} slave'
+      state: present
+    notify: restart nut-monitor
+  - meta: flush_handlers
+  - name: start service nut-monitor
+    systemd:
+      name: nut-monitor
+      state: started
+  handlers:
+  - name: restart nut-monitor
+    systemd:
+      name: nut-monitor
+      state: restarted
+...

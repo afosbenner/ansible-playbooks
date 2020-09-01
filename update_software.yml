@@ -2,6 +2,10 @@
 - hosts: default_target
   become: yes
   tasks:
+  - name: add EPEL repository
+    dnf:
+      name: epel-release
+      state: present
   - name: update all packages using dnf
     dnf:
       name: "*"
