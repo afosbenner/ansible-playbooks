@@ -13,7 +13,7 @@
     lineinfile:
       path: /etc/systemd/system/serial-getty@ttyS0.service
       regexp: '^ExecStart='
-      line: 'ExecStart=-/sbin/agetty --keep-baud 115200,38400,9600 %I linux'
+      line: 'ExecStart=-/sbin/agetty 115200 %I linux'
     notify: reload systemd configs
   - name: symlink service config to getty.target.wants
     file:
