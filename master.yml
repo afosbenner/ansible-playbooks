@@ -16,4 +16,7 @@
 
 - name: configure NUT client for UPS monitoring
   import_playbook: setup_nut_client.yml
+
+- name: configure service to run serial console
+  import_playbook: setup_serial_console.yml
 ...

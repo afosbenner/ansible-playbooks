@@ -2,8 +2,11 @@
 - hosts: default_target
   become: yes
   tasks:
-  - name: install vim-enhanced
+  - name: install general-purpose software
     dnf:
-      name: "vim-enhanced"
+      name:
+      - vim-enhanced
+      - tree
+      - screen
       state: present
 ...

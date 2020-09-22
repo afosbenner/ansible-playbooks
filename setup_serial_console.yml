@@ -1,0 +1,34 @@
+# playbook to create a service to run serial tty
+---
+- hosts: default_target
+  become: yes
+  tasks:
+  - name: copy service template
+    copy:
+      remote_src: yes
+      force: no
+      src: /usr/lib/systemd/system/serial-getty@.service
+      dest: /etc/systemd/system/serial-getty@ttyS0.service
+  - name: edit the service config
+    lineinfile:
+      path: /etc/systemd/system/serial-getty@ttyS0.service
+      regexp: '^ExecStart='
+      line: 'ExecStart=-/sbin/agetty --keep-baud 115200,38400,9600 %I linux'
+    notify: reload systemd configs
+  - name: symlink service config to getty.target.wants
+    file:
+      src: /etc/systemd/system/serial-getty@ttyS0.service
+      path: /etc/systemd/system/getty.target.wants/serial-getty@ttyS0.service
+      state: link
+    notify: reload systemd configs
+  - meta: flush_handlers
+  - name: enable service serial-getty, and ensure it is started
+    systemd:
+      name: serial-getty@ttyS0
+      state: started
+      enabled: yes
+  handlers:
+  - name: reload systemd configs
+    systemd:
+      daemon_reload: yes
+...
